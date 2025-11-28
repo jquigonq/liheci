@@ -17,6 +17,67 @@
             --color-success: #27AE60;
             --color-ai: #8E44AD;
         }
+        <script type="module">
+  // IMPORTS FIREBASE
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+  // CONFIGURACIÓN DE TU APP
+  const firebaseConfig = {
+    apiKey: "AIzaSyALvmbIb_QTvxf1Zm2Eoxth1QQPkO3vsqU",
+    authDomain: "liheci-web.firebaseapp.com",
+    projectId: "liheci-web",
+    storageBucket: "liheci-web.firebasestorage.app",
+    messagingSenderId: "728983905000",
+    appId: "1:728983905000:web:460d600284bd2b891adf5d"
+  };
+
+  // INICIALIZACIÓN
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // ============================
+  // ✅ LECTURA PÚBLICA DE VERBOS
+  // ============================
+  window.loadVerbsFromFirebase = async function () {
+    const querySnapshot = await getDocs(collection(db, "verbs"));
+    const verbs = [];
+    querySnapshot.forEach((doc) => {
+      verbs.push({ id: doc.id, ...doc.data() });
+    });
+    console.log("Verbos cargados desde Firebase:", verbs);
+    return verbs;
+  };
+
+  // ============================
+  // ✅ LOGIN SOLO ADMIN
+  // ============================
+  window.adminLogin = async function (email, password) {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      alert("Admin conectado correctamente");
+      console.log("Admin UID:", userCredential.user.uid);
+    } catch (e) {
+      alert("Error de login");
+      console.error(e);
+    }
+  };
+
+  // ============================
+  // ✅ DETECTAR SESIÓN ACTIVA
+  // ============================
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("Admin logueado:", user.uid);
+    } else {
+      console.log("Usuario no autenticado");
+    }
+  });
+
+</script>
+
 
         body {
             background-color: var(--color-bg);
